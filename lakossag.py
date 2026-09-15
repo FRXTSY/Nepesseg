@@ -49,7 +49,26 @@ while True:
                 kivalasztottak.append(leiras)
         print(f" Összesen {len(kivalasztottak)} darab ilyen település van: ")
         
+        varosok_elorehaladas = 0
+
+        for i in range(10):
+            if varosok_elorehaladas < len(kivalasztottak):
+                print(kivalasztottak[varosok_elorehaladas])
+                varosok_elorehaladas += 1
+            else:
+                break
+                
         if len(kivalasztottak) == 0:
             print("Nincs találat ezzel a település típussal :(")
+
+        while True:
+            print("\t Település adatok \t")
+            print("[<]  Vissza")
+            print("[>] Tovább")
+            print("[X] Exit")
+
+            choice2 = input()
     
     if choice == "X":
+        print("Kiléptél")
+        break
