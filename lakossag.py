@@ -1,3 +1,4 @@
+import pprint
 adat_gyujto = []
 with open("lakossag_2025.csv", "r", encoding="UTF-8") as fajl:
     fajl.readline()
@@ -13,13 +14,15 @@ with open("lakossag_2025.csv", "r", encoding="UTF-8") as fajl:
             "no": int(adatok[4].replace(" ", ""))
         }
         adat_gyujto.append(leiras)
+
 while True:
     print("\t Főmenü \t")
     print("[1] Megye adatai")
     print("[2] Település típusai")
     print("[X] Exit")
-    
+
     choice = input("Válassz egyet: ").strip().upper()
+
     if choice == "1":
         megye_bekero = input("Írd be a megyéd azonosítóját: ")
         telepulesek_szama = 0
@@ -32,43 +35,79 @@ while True:
                 osszes_lakos = osszes_lakos + (leiras["ferfi"] + leiras["no"])
                 if "város" in leiras["tipus"] or "fővárosi kerület" in leiras["tipus"] or "vármegye székhely" in leiras["tipus"] or "vármegyei jogú város" in leiras["tipus"]:
                     varoslakok = varoslakok + (leiras["ferfi"] + leiras["no"])
-                continue
-            else:
-                continue
+
         print(f" A beirt {megye_bekero.upper()} kódú megye adatai:")
         print(f"Az ebben a megyében található  települések száma: {telepulesek_szama}")
         print(f"Az ebben a megyében élő emberek száma: {osszes_lakos} fő")
         print(f"A megye városainak lakossága: {varoslakok} fő")
-        
+
     if choice == "2":
-        telepules_tipus_bekero = input("Írj be egy település típust amire kíváncsi vagy(pl. város, község, stb...: )")
-        kivalasztottak = []
-        
-        for leiras in adat_gyujto:
-            if telepules_tipus_bekero.lower() == leiras["tipus"]:
-                kivalasztottak.append(leiras)
-        print(f" Összesen {len(kivalasztottak)} darab ilyen település van: ")
-        
-        varosok_elorehaladas = 0
+            tipus_lista = {
+                "1": "város",
+                "2": "község",
+                "3": "fővárosi kerület",
+                "4": "vármegye székhely",
+                "5": "vármegyei jogú város",
+                "6": "nagyközség",
+            }
 
-        for i in range(10):
-            if varosok_elorehaladas < len(kivalasztottak):
-                print(kivalasztottak[varosok_elorehaladas])
-                varosok_elorehaladas += 1
+            print("[1]  Város")
+            print("[2] Község")
+            print("[3] Fővárosi kerület")
+            print("[4] Vármegye székhely")
+            print("[5] Vármegyei jogú város")
+            print("[6] Nagyközség")
+            tipus_valasztas = input("Válassz egy település típust: ").strip()
+
+            if tipus_valasztas not in tipus_lista:
+                print("Nincs ilyen menüpont!")
             else:
-                break
-                
-        if len(kivalasztottak) == 0:
-            print("Nincs találat ezzel a település típussal :(")
+                telepules_tipus_bekero = tipus_lista[tipus_valasztas]
+                kivalasztottak = []
 
-        while True:
-            print("\t Település adatok \t")
-            print("[<]  Vissza")
-            print("[>] Tovább")
-            print("[X] Exit")
+                for leiras in adat_gyujto:
+                    if telepules_tipus_bekero.lower() == leiras["tipus"].lower():
+                        kivalasztottak.append(leiras)
+                print(f" Összesen {len(kivalasztottak)} darab ilyen település van: ")
 
-            choice2 = input()
-    
+                if len(kivalasztottak) == 0:
+                    print("Nincs találat ezzel a település típussal :(")
+                else:
+                    oldal_kezdete = 0  # az aktuális oldal első elemének indexe
+
+                    while True:
+                        print("\t Település adatok \t")
+
+                        varosok_elorehaladas = oldal_kezdete
+                        for i in range(10):
+                            if varosok_elorehaladas < len(kivalasztottak):
+                                telepules = kivalasztottak[varosok_elorehaladas]
+                                lakossag = telepules["ferfi"] + telepules["no"]
+                                print(f"{telepules['telepules']}: {lakossag} fő")
+                                varosok_elorehaladas += 1
+                            else:
+                                break
+
+                        print("[<]  Vissza")
+                        print("[>] Tovább")
+                        print("[X] Exit")
+
+                        choice2 = input().strip().upper()
+
+                        if choice2 == ">":
+                            if oldal_kezdete + 10 < len(kivalasztottak):
+                                oldal_kezdete += 10
+                            else:
+                                print("Ez az utolsó oldal!")
+                        elif choice2 == "<":
+                            if oldal_kezdete - 10 >= 0:
+                                oldal_kezdete -= 10
+                            else:
+                                print("Ez az első oldal!")
+                        elif choice2 == "X":
+                            print("Kiléptél a lapozásból!")
+                            break
+
     if choice == "X":
-        print("Kiléptél")
+        print("Kiléptél!")
         break
